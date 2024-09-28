@@ -5,8 +5,8 @@ const z = require("zod");
 const { JWT_Secret } = require("../config.js");
 const { Users, Account } = require("../db.js");
 const signupRoute = express.Router();
+const bcrypt = require("bcrypt");
 
-// const secret = "hadimba"
 app.use(express.json());
 const {
   usernameschema,
@@ -16,11 +16,6 @@ const {
 } = require("../zodtypes/types.js");
 
 let username, password, firstname, lastname;
-signupRoute.get("/", (req, res) =>
-  res.status(200).json({
-    msg: "This is a post Route",
-  })
-);
 signupRoute.post("/", async (req, res) => {
   const { username, password, firstname, lastname } = req.body;
 
@@ -47,8 +42,6 @@ signupRoute.post("/", async (req, res) => {
   });
   console.log(existingUser);
   if (existingUser) {
-    console.log("i am in the existing Users checker function");
-
     res.status(411).json({
       msg: "users with this username already exists",
     });
@@ -56,10 +49,12 @@ signupRoute.post("/", async (req, res) => {
   }
 
   try {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const user = await Users.create({
       firstname: firstname,
       lastname: lastname,
-      password: password,
+      password: hashedPassword,
       username: username,
     });
     const user_id = user._id;
@@ -74,18 +69,16 @@ signupRoute.post("/", async (req, res) => {
       token: token,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
-      msg: "Thiere is some error",
+      msg: "There is some error",
     });
   }
-  // res.send("done")
 });
 
 app.use((err, req, res, next) => {
   if (err) {
     res.send(500).json({
-      msg: "We had an internal server error",
+      msg: "Internal server error",
     });
   }
 });

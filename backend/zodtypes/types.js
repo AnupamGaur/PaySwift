@@ -8,7 +8,7 @@ const lastnameschema= z.string().max(30);
 const signinschema = z.object({
   username: z.string(),
   password: z.string(),
-}).strict()
+})
 
 
 module.exports = ({

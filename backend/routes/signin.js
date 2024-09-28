@@ -25,7 +25,6 @@ signinRoute.post("/", async (req, res) => {
     const user = await Users.findOne({
       username: username,
     });
-    console.log("THIS IS USER",user)
     if (!user) {
       return res.status(401).json({
         message: "Invalid username or password",

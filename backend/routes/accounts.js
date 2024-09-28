@@ -6,7 +6,7 @@ const app = Express();
 const accountsRouter = Express.Router();
 
 accountsRouter.get("/", (req, res) => {
-  console.log("Route is woring");
+  console.log("Route is working");
   res.status(200).json({
     msg: "MSG",
   });
@@ -16,13 +16,11 @@ accountsRouter.get("/balance", authmiddleware, async (req, res) => {
     userId: req.user_id,
   });
   res.status(200).json({
-    "Your aukaat is": collection.balance,
+    "Your balance is": collection.balance,
   });
 });
 accountsRouter.post("/transfer", authmiddleware, async (req, res) => {
   console.log("Session is not working")
-  // const session = await mongoose.startSession();
-  // session.startTransaction();
   const { to, amount } = req.body;
 
   const account = await Account.findOne({ userId: req.user_id })
